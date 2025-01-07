@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import sn.zahra.thiaw.gestiondesfichiers.Datas.Entities.FileEntity;
+import sn.zahra.thiaw.gestiondesfichiers.Datas.Enums.StorageType;
 import sn.zahra.thiaw.gestiondesfichiers.Mappers.FileMapper;
 import sn.zahra.thiaw.gestiondesfichiers.Services.FileService;
 import sn.zahra.thiaw.gestiondesfichiers.Web.Controllers.FileController;
@@ -21,6 +22,7 @@ import sn.zahra.thiaw.gestiondesfichiers.Web.Filters.ApiResponse;
 import java.util.List;
 import java.util.stream.Collectors;
 
+// FileControllerImpl.java
 @RestController
 @RequestMapping("/files")
 public class FileControllerImpl extends BaseControllerImpl<FileEntity, Long, FileResponseDTO> implements FileController {
@@ -35,26 +37,27 @@ public class FileControllerImpl extends BaseControllerImpl<FileEntity, Long, Fil
     }
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    @Override
-    public ResponseEntity<ApiResponse<FileResponseDTO>> uploadFile(@RequestParam("file") MultipartFile file) {
+    public ResponseEntity<ApiResponse<FileResponseDTO>> uploadFile(
+            @RequestParam("file") MultipartFile file,
+            @RequestParam(value = "storageType", defaultValue = "LOCAL") StorageType storageType) {
         try {
             if (file.isEmpty()) {
                 return ResponseEntity.badRequest().body(new ApiResponse<>(
                         false,
-                        "Le fichier est vide",
+                        "File is empty",
                         null,
-                        List.of("Le fichier ne peut pas être vide"),
+                        List.of("File cannot be empty"),
                         "BAD_REQUEST",
                         400
                 ));
             }
 
-            FileEntity uploadedFile = fileService.uploadFile(file);
+            FileEntity uploadedFile = fileService.uploadFile(file, storageType);
             FileResponseDTO responseDto = fileMapper.toResponseDto(uploadedFile);
 
             return ResponseEntity.status(201).body(new ApiResponse<>(
                     true,
-                    "Fichier téléchargé avec succès",
+                    "File uploaded successfully",
                     responseDto,
                     null,
                     "SUCCESS",
@@ -63,7 +66,7 @@ public class FileControllerImpl extends BaseControllerImpl<FileEntity, Long, Fil
         } catch (Exception e) {
             return ResponseEntity.status(500).body(new ApiResponse<>(
                     false,
-                    "Erreur lors du téléchargement du fichier",
+                    "Error uploading file",
                     null,
                     List.of(e.getMessage()),
                     "ERROR",
@@ -72,7 +75,6 @@ public class FileControllerImpl extends BaseControllerImpl<FileEntity, Long, Fil
         }
     }
 
-    @Override
     @GetMapping("/{id}/download")
     public ResponseEntity<ByteArrayResource> downloadFile(@PathVariable Long id) {
         try {
@@ -97,33 +99,28 @@ public class FileControllerImpl extends BaseControllerImpl<FileEntity, Long, Fil
             @RequestParam(value = "size", defaultValue = "10") int size,
             @RequestParam(value = "searchQuery", required = false) String searchQuery) {
         try {
-            // Créer un objet Pageable pour la pagination
             Pageable pageable = PageRequest.of(page, size);
-
-            // Si searchQuery est présent, filtrer les fichiers
             Page<FileEntity> filePage;
+
             if (searchQuery != null && !searchQuery.isEmpty()) {
                 filePage = fileService.searchFiles(searchQuery, pageable);
             } else {
                 filePage = fileService.getAllFiles(pageable);
             }
 
-            // Mapper les entités vers des DTOs
-            List<FileResponseDTO> responseDtos = filePage.getContent().stream()
+            List<FileResponseDTO> dtos = filePage.getContent().stream()
                     .map(fileMapper::toResponseDto)
                     .collect(Collectors.toList());
 
-            // Créer la réponse avec les métadonnées de la pagination
             ApiResponse<List<FileResponseDTO>> apiResponse = new ApiResponse<>(
                     true,
-                    "Fichiers récupérés avec succès",
-                    responseDtos,
+                    "Files retrieved successfully",
+                    dtos,
                     null,
                     "SUCCESS",
                     200
             );
 
-            // Ajouter les informations de pagination à la réponse
             apiResponse.setPage(page);
             apiResponse.setSize(size);
             apiResponse.setTotalElements(filePage.getTotalElements());
@@ -133,7 +130,7 @@ public class FileControllerImpl extends BaseControllerImpl<FileEntity, Long, Fil
         } catch (Exception e) {
             return ResponseEntity.status(500).body(new ApiResponse<>(
                     false,
-                    "Erreur lors de la récupération des fichiers",
+                    "Error retrieving files",
                     null,
                     List.of(e.getMessage()),
                     "ERROR",
@@ -142,15 +139,28 @@ public class FileControllerImpl extends BaseControllerImpl<FileEntity, Long, Fil
         }
     }
 
-    // Ajout de la méthode DELETE /files/{id}
     @Override
     @DeleteMapping("/{id}")
     public ResponseEntity<ApiResponse<Void>> delete(@PathVariable Long id) {
         try {
-            return super.delete(id);  // Hérite de la méthode générique de BaseControllerImpl
+            fileService.delete(id);
+            return ResponseEntity.ok(new ApiResponse<>(
+                    true,
+                    "File deleted successfully",
+                    null,
+                    null,
+                    "SUCCESS",
+                    200
+            ));
         } catch (Exception e) {
-            ApiResponse<Void> apiResponse = new ApiResponse<>(false, "Erreur interne", null, List.of(e.getMessage()), "INTERNAL_ERROR", 500);
-            return ResponseEntity.status(500).body(apiResponse);
+            return ResponseEntity.status(500).body(new ApiResponse<>(
+                    false,
+                    "Error deleting file",
+                    null,
+                    List.of(e.getMessage()),
+                    "ERROR",
+                    500
+            ));
         }
     }
 }

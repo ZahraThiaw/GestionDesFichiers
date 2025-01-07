@@ -1,9 +1,9 @@
 // FileEntity.java
 package sn.zahra.thiaw.gestiondesfichiers.Datas.Entities;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.*;
+import sn.zahra.thiaw.gestiondesfichiers.Datas.Enums.StorageType;
 
 @Entity
 @Data
@@ -16,4 +16,11 @@ public class FileEntity extends BaseEntity {
     private String contentType;
     private Long size;
     private String filePath;
+
+    @Enumerated(EnumType.STRING)
+    private StorageType storageType;
+
+    @Lob
+    @Basic(fetch = FetchType.LAZY)
+    private byte[] fileData;
 }
