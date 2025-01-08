@@ -13,5 +13,5 @@ public interface FileController extends BaseController<FileEntity, Long, FileRes
 
     ResponseEntity<ApiResponse<FileResponseDTO>> uploadFile(MultipartFile file, StorageType storageType);
 
-    ResponseEntity<ByteArrayResource> downloadFile(Long id);
+    ResponseEntity<?> downloadFile(Long id);
 }

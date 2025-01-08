@@ -11,10 +11,15 @@ import sn.zahra.thiaw.gestiondesfichiers.Datas.Enums.StorageType;
 @NoArgsConstructor
 @AllArgsConstructor
 public class FileEntity extends BaseEntity {
+
     private String fileName;
+
     private String originalFileName;
+
     private String contentType;
+
     private Long size;
+
     private String filePath;
 
     @Enumerated(EnumType.STRING)

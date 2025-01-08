@@ -16,12 +16,14 @@ import sn.zahra.thiaw.gestiondesfichiers.Exceptions.ResourceNotFoundException;
 import sn.zahra.thiaw.gestiondesfichiers.Services.FileService;
 import sn.zahra.thiaw.gestiondesfichiers.Services.Storage.Impl.StorageStrategyFactory;
 import sn.zahra.thiaw.gestiondesfichiers.Services.Storage.StorageStrategy;
+import sn.zahra.thiaw.gestiondesfichiers.Web.Configs.FileStorageConfig;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.Optional;
 import java.util.UUID;
 
 // FileServiceImpl.java
@@ -30,11 +32,13 @@ public class FileServiceImpl extends BaseServiceImpl<FileEntity, Long> implement
 
     private final FileRepository fileRepository;
     private final StorageStrategyFactory storageStrategyFactory;
+    private final FileStorageConfig fileStorageConfig;
 
-    public FileServiceImpl(FileRepository fileRepository, StorageStrategyFactory storageStrategyFactory) {
+    public FileServiceImpl(FileRepository fileRepository, StorageStrategyFactory storageStrategyFactory, FileStorageConfig fileStorageConfig) {
         super(fileRepository);
         this.fileRepository = fileRepository;
         this.storageStrategyFactory = storageStrategyFactory;
+        this.fileStorageConfig = fileStorageConfig;
     }
 
     @Override
@@ -42,12 +46,52 @@ public class FileServiceImpl extends BaseServiceImpl<FileEntity, Long> implement
         validateFile(file);
 
         String originalFileName = StringUtils.cleanPath(file.getOriginalFilename());
-        String fileName = originalFileName + "_" + UUID.randomUUID().toString();
+        String fileExtension = getFileExtension(originalFileName);
+
+        // Obtenir le nom du fichier sans extension
+        String nameWithoutExtension = originalFileName.substring(0, originalFileName.lastIndexOf('.'));
+
+        // Construire le nouveau nom de fichier
+        String fileName = nameWithoutExtension + UUID.randomUUID().toString() + "." + fileExtension;
 
         StorageStrategy strategy = storageStrategyFactory.getStrategy(storageType);
         FileEntity fileEntity = strategy.store(file, fileName);
+        fileEntity.setOriginalFileName(originalFileName);
 
         return fileRepository.save(fileEntity);
+    }
+
+    private String getFileExtension(String filename) {
+        if (filename == null || filename.lastIndexOf(".") == -1) {
+            return "";
+        }
+        return filename.substring(filename.lastIndexOf(".") + 1);
+    }
+
+    private void validateFile(MultipartFile file) {
+        if (file.isEmpty()) {
+            throw new BadRequestException("File is empty");
+        }
+
+        if (file.getSize() > fileStorageConfig.getMaxFileSize()) {
+            throw new BadRequestException("File size exceeds maximum limit of " +
+                    fileStorageConfig.getMaxFileSize() / 1_000_000 + "MB");
+        }
+
+        String contentType = file.getContentType();
+        if (contentType == null || !isAllowedContentType(contentType)) {
+            throw new BadRequestException("File type not allowed. Allowed types: " +
+                    String.join(", ", fileStorageConfig.getAllowedContentTypes()));
+        }
+    }
+
+    private boolean isAllowedContentType(String contentType) {
+        return fileStorageConfig.getAllowedContentTypes().contains(contentType);
+    }
+
+    @Override
+    public Optional<FileEntity> findByIdAndDeletedFalse(Long id) {
+        return fileRepository.findByIdAndDeletedFalse(id);
     }
 
     @Override
@@ -69,28 +113,6 @@ public class FileServiceImpl extends BaseServiceImpl<FileEntity, Long> implement
         fileRepository.save(fileEntity);
     }
 
-    private void validateFile(MultipartFile file) {
-        if (file.isEmpty()) {
-            throw new BadRequestException("File is empty");
-        }
-
-        if (file.getSize() > 10_000_000) { // 10 MB
-            throw new BadRequestException("File size exceeds maximum limit of 10MB");
-        }
-
-        String contentType = file.getContentType();
-        if (contentType == null || !isAllowedContentType(contentType)) {
-            throw new BadRequestException("File type not allowed");
-        }
-    }
-
-    private boolean isAllowedContentType(String contentType) {
-        return contentType.startsWith("image/") ||
-                contentType.equals("application/pdf") ||
-                contentType.equals("application/msword") ||
-                contentType.equals("application/vnd.openxmlformats-officedocument.wordprocessingml.document");
-    }
-
     @Override
     public Page<FileEntity> getAllFiles(Pageable pageable) {
         return fileRepository.findAll(pageable);
@@ -100,4 +122,5 @@ public class FileServiceImpl extends BaseServiceImpl<FileEntity, Long> implement
     public Page<FileEntity> searchFiles(String searchQuery, Pageable pageable) {
         return fileRepository.findByFileNameContainingIgnoreCase(searchQuery, pageable);
     }
+
 }

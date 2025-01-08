@@ -9,6 +9,6 @@ import java.util.Optional;
 public interface UserRepository extends BaseRepository<UserEntity, Long> {
 
     Optional<UserEntity> findByEmail(String email);
-    Optional<UserEntity> findByEmailAndDeletedFalse(String email);
 
+    Optional<UserEntity> findByEmailAndDeletedFalse(String email);
 }
