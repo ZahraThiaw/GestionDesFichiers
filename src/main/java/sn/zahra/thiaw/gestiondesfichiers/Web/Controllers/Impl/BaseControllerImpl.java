@@ -8,7 +8,8 @@ import sn.zahra.thiaw.gestiondesfichiers.Exceptions.ResourceNotFoundException;
 import sn.zahra.thiaw.gestiondesfichiers.Exceptions.UnauthorizedException;
 import sn.zahra.thiaw.gestiondesfichiers.Exceptions.ValidationException;
 import sn.zahra.thiaw.gestiondesfichiers.Web.Controllers.BaseController;
-import sn.zahra.thiaw.gestiondesfichiers.Web.Filters.ApiResponse;
+import sn.zahra.thiaw.gestiondesfichiers.Filters.ApiResponse;
+import sn.zahra.thiaw.gestiondesfichiers.Web.Dtos.Mappers.GenericMapper;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -16,10 +17,10 @@ import java.util.stream.Collectors;
 public abstract class BaseControllerImpl<E, ID, R> implements BaseController<E, ID, R> {
 
     private final sn.zahra.thiaw.gestiondesfichiers.Services.BaseService<E, ID> service;
-    private final sn.zahra.thiaw.gestiondesfichiers.Mappers.GenericMapper<E, ?, R> mapper;
+    private final GenericMapper<E, ?, R> mapper;
 
     public BaseControllerImpl(sn.zahra.thiaw.gestiondesfichiers.Services.BaseService<E, ID> service,
-                              sn.zahra.thiaw.gestiondesfichiers.Mappers.GenericMapper<E, ?, R> mapper) {
+                              GenericMapper<E, ?, R> mapper) {
         this.service = service;
         this.mapper = mapper;
     }

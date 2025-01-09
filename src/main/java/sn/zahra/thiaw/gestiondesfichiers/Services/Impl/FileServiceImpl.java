@@ -1,8 +1,6 @@
 // FileServiceImpl.java
 package sn.zahra.thiaw.gestiondesfichiers.Services.Impl;
 
-import jakarta.annotation.PostConstruct;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -14,19 +12,14 @@ import sn.zahra.thiaw.gestiondesfichiers.Datas.Repositories.FileRepository;
 import sn.zahra.thiaw.gestiondesfichiers.Exceptions.BadRequestException;
 import sn.zahra.thiaw.gestiondesfichiers.Exceptions.ResourceNotFoundException;
 import sn.zahra.thiaw.gestiondesfichiers.Services.FileService;
-import sn.zahra.thiaw.gestiondesfichiers.Services.Storage.Impl.StorageStrategyFactory;
-import sn.zahra.thiaw.gestiondesfichiers.Services.Storage.StorageStrategy;
-import sn.zahra.thiaw.gestiondesfichiers.Web.Configs.FileStorageConfig;
+import sn.zahra.thiaw.gestiondesfichiers.Strategies.Impl.StorageStrategyFactory;
+import sn.zahra.thiaw.gestiondesfichiers.Strategies.StorageStrategy;
+import sn.zahra.thiaw.gestiondesfichiers.Configs.FileStorageConfig;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 import java.util.Optional;
 import java.util.UUID;
 
-// FileServiceImpl.java
+
 @Service
 public class FileServiceImpl extends BaseServiceImpl<FileEntity, Long> implements FileService {
 
@@ -41,22 +34,26 @@ public class FileServiceImpl extends BaseServiceImpl<FileEntity, Long> implement
         this.fileStorageConfig = fileStorageConfig;
     }
 
+
     @Override
     public FileEntity uploadFile(MultipartFile file, StorageType storageType) {
         validateFile(file);
 
         String originalFileName = StringUtils.cleanPath(file.getOriginalFilename());
         String fileExtension = getFileExtension(originalFileName);
-
-        // Obtenir le nom du fichier sans extension
         String nameWithoutExtension = originalFileName.substring(0, originalFileName.lastIndexOf('.'));
-
-        // Construire le nouveau nom de fichier
         String fileName = nameWithoutExtension + UUID.randomUUID().toString() + "." + fileExtension;
 
-        StorageStrategy strategy = storageStrategyFactory.getStrategy(storageType);
-        FileEntity fileEntity = strategy.store(file, fileName);
+        // Création et configuration de base de FileEntity
+        FileEntity fileEntity = new FileEntity();
+        fileEntity.setFileName(fileName);
         fileEntity.setOriginalFileName(originalFileName);
+        fileEntity.setContentType(file.getContentType());
+        fileEntity.setSize(file.getSize());
+
+        // Application de la stratégie de stockage
+        StorageStrategy strategy = storageStrategyFactory.getStrategy(storageType);
+        strategy.store(file, fileName, fileEntity);
 
         return fileRepository.save(fileEntity);
     }

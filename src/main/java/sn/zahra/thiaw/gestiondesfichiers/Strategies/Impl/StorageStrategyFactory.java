@@ -1,10 +1,10 @@
 // StorageStrategyFactory.java
-package sn.zahra.thiaw.gestiondesfichiers.Services.Storage.Impl;
+package sn.zahra.thiaw.gestiondesfichiers.Strategies.Impl;
 
 
 import org.springframework.stereotype.Service;
 import sn.zahra.thiaw.gestiondesfichiers.Datas.Enums.StorageType;
-import sn.zahra.thiaw.gestiondesfichiers.Services.Storage.StorageStrategy;
+import sn.zahra.thiaw.gestiondesfichiers.Strategies.StorageStrategy;
 
 import java.util.List;
 

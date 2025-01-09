@@ -2,7 +2,7 @@ package sn.zahra.thiaw.gestiondesfichiers.Services.Impl;
 
 import sn.zahra.thiaw.gestiondesfichiers.Datas.Entities.UserEntity;
 import sn.zahra.thiaw.gestiondesfichiers.Datas.Repositories.UserRepository;
-import sn.zahra.thiaw.gestiondesfichiers.Mappers.GenericMapper;
+import sn.zahra.thiaw.gestiondesfichiers.Web.Dtos.Mappers.GenericMapper;
 import sn.zahra.thiaw.gestiondesfichiers.Services.UserService;
 import sn.zahra.thiaw.gestiondesfichiers.Web.Dtos.Responses.UserResponseDTO;
 import org.springframework.stereotype.Service;

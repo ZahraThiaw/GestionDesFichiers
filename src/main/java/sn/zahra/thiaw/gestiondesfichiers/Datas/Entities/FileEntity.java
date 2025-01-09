@@ -23,7 +23,7 @@ public class FileEntity extends BaseEntity {
     private String filePath;
 
     @Enumerated(EnumType.STRING)
-    private StorageType storageType;
+    private StorageType storageType = StorageType.LOCAL;
 
     @Lob
     @Basic(fetch = FetchType.LAZY)

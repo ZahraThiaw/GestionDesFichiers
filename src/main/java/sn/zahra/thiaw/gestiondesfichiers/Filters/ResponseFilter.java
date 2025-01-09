@@ -1,4 +1,4 @@
-package sn.zahra.thiaw.gestiondesfichiers.Web.Filters;
+package sn.zahra.thiaw.gestiondesfichiers.Filters;
 
 import jakarta.servlet.FilterConfig;
 import jakarta.servlet.*;

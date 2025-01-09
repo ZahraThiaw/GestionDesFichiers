@@ -1,7 +1,7 @@
 package sn.zahra.thiaw.gestiondesfichiers.Web.Controllers;
 
 import org.springframework.http.ResponseEntity;
-import sn.zahra.thiaw.gestiondesfichiers.Web.Filters.ApiResponse;
+import sn.zahra.thiaw.gestiondesfichiers.Filters.ApiResponse;
 
 import java.util.List;
 

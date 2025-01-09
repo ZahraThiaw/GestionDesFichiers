@@ -1,14 +1,13 @@
 package sn.zahra.thiaw.gestiondesfichiers.Web.Controllers.Impl;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import sn.zahra.thiaw.gestiondesfichiers.Datas.Entities.UserEntity;
-import sn.zahra.thiaw.gestiondesfichiers.Mappers.GenericMapper;
+import sn.zahra.thiaw.gestiondesfichiers.Web.Dtos.Mappers.GenericMapper;
 import sn.zahra.thiaw.gestiondesfichiers.Services.UserService;
 import sn.zahra.thiaw.gestiondesfichiers.Web.Controllers.UserController;
 import sn.zahra.thiaw.gestiondesfichiers.Web.Dtos.Responses.UserResponseDTO;
-import sn.zahra.thiaw.gestiondesfichiers.Web.Filters.ApiResponse;
+import sn.zahra.thiaw.gestiondesfichiers.Filters.ApiResponse;
 
 import java.util.Collections;
 import java.util.List;

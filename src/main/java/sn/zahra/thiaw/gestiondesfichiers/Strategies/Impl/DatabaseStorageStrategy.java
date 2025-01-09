@@ -1,29 +1,21 @@
 // DatabaseStorageStrategy.java
-package sn.zahra.thiaw.gestiondesfichiers.Services.Storage.Impl;
+package sn.zahra.thiaw.gestiondesfichiers.Strategies.Impl;
 
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import sn.zahra.thiaw.gestiondesfichiers.Datas.Entities.FileEntity;
 import sn.zahra.thiaw.gestiondesfichiers.Datas.Enums.StorageType;
-import sn.zahra.thiaw.gestiondesfichiers.Services.Storage.StorageStrategy;
+import sn.zahra.thiaw.gestiondesfichiers.Strategies.StorageStrategy;
 
 import java.io.IOException;
 
 @Service
 public class DatabaseStorageStrategy implements StorageStrategy {
-
     @Override
-    public FileEntity store(MultipartFile file, String fileName) {
+    public void store(MultipartFile file, String fileName, FileEntity fileEntity) {
         try {
-            FileEntity fileEntity = new FileEntity();
-            fileEntity.setFileName(fileName);
-            fileEntity.setOriginalFileName(file.getOriginalFilename());
-            fileEntity.setContentType(file.getContentType());
-            fileEntity.setSize(file.getSize());
             fileEntity.setFileData(file.getBytes());
             fileEntity.setStorageType(StorageType.DATABASE);
-
-            return fileEntity;
         } catch (IOException e) {
             throw new RuntimeException("Failed to store file in database", e);
         }

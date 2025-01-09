@@ -1,4 +1,4 @@
-package sn.zahra.thiaw.gestiondesfichiers.Web.Configs;
+package sn.zahra.thiaw.gestiondesfichiers.Configs;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;

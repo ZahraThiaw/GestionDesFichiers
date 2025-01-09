@@ -1,5 +1,4 @@
-// LocalStorageStrategy.java
-package sn.zahra.thiaw.gestiondesfichiers.Services.Storage.Impl;
+package sn.zahra.thiaw.gestiondesfichiers.Strategies.Impl;
 
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Value;
@@ -7,7 +6,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import sn.zahra.thiaw.gestiondesfichiers.Datas.Entities.FileEntity;
 import sn.zahra.thiaw.gestiondesfichiers.Datas.Enums.StorageType;
-import sn.zahra.thiaw.gestiondesfichiers.Services.Storage.StorageStrategy;
+import sn.zahra.thiaw.gestiondesfichiers.Strategies.StorageStrategy;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -17,7 +16,6 @@ import java.nio.file.StandardCopyOption;
 
 @Service
 public class LocalStorageStrategy implements StorageStrategy {
-
     @Value("${file.upload-dir}")
     private String uploadDir;
 
@@ -31,20 +29,12 @@ public class LocalStorageStrategy implements StorageStrategy {
     }
 
     @Override
-    public FileEntity store(MultipartFile file, String fileName) {
+    public void store(MultipartFile file, String fileName, FileEntity fileEntity) {
         try {
             Path targetLocation = Paths.get(uploadDir).resolve(fileName);
             Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
-
-            FileEntity fileEntity = new FileEntity();
-            fileEntity.setFileName(fileName);
-            fileEntity.setOriginalFileName(file.getOriginalFilename());
-            fileEntity.setContentType(file.getContentType());
-            fileEntity.setSize(file.getSize());
-            fileEntity.setFilePath(targetLocation.toString());
+            fileEntity.setFilePath(fileName);
             fileEntity.setStorageType(StorageType.LOCAL);
-
-            return fileEntity;
         } catch (IOException e) {
             throw new RuntimeException("Failed to store file locally", e);
         }
@@ -53,7 +43,7 @@ public class LocalStorageStrategy implements StorageStrategy {
     @Override
     public byte[] retrieve(FileEntity fileEntity) {
         try {
-            Path filePath = Paths.get(fileEntity.getFilePath());
+            Path filePath = Paths.get(uploadDir).resolve(fileEntity.getFilePath());
             return Files.readAllBytes(filePath);
         } catch (IOException e) {
             throw new RuntimeException("Failed to read file", e);
@@ -63,7 +53,8 @@ public class LocalStorageStrategy implements StorageStrategy {
     @Override
     public void delete(FileEntity fileEntity) {
         try {
-            Files.deleteIfExists(Paths.get(fileEntity.getFilePath()));
+            Path filePath = Paths.get(uploadDir).resolve(fileEntity.getFilePath());
+            Files.deleteIfExists(filePath);
         } catch (IOException e) {
             throw new RuntimeException("Failed to delete file", e);
         }

@@ -1,4 +1,4 @@
-package sn.zahra.thiaw.gestiondesfichiers.Mappers;
+package sn.zahra.thiaw.gestiondesfichiers.Web.Dtos.Mappers;
 
 
 import org.springframework.stereotype.Component;

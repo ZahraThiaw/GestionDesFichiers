@@ -12,7 +12,7 @@ import sn.zahra.thiaw.gestiondesfichiers.Services.Impl.JwtService;
 import sn.zahra.thiaw.gestiondesfichiers.Web.Dtos.Requests.LoginUserDto;
 import sn.zahra.thiaw.gestiondesfichiers.Web.Dtos.Requests.RegisterUserDTO;
 import sn.zahra.thiaw.gestiondesfichiers.Web.Dtos.Responses.LoginResponse;
-import sn.zahra.thiaw.gestiondesfichiers.Web.Filters.ApiResponse;
+import sn.zahra.thiaw.gestiondesfichiers.Filters.ApiResponse;
 
 import java.util.Collections;
 

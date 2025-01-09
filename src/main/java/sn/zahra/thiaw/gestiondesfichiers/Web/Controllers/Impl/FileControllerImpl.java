@@ -15,11 +15,12 @@ import org.springframework.web.multipart.MultipartFile;
 import sn.zahra.thiaw.gestiondesfichiers.Datas.Entities.FileEntity;
 import sn.zahra.thiaw.gestiondesfichiers.Datas.Enums.StorageType;
 import sn.zahra.thiaw.gestiondesfichiers.Exceptions.ResourceNotFoundException;
-import sn.zahra.thiaw.gestiondesfichiers.Mappers.FileMapper;
+import sn.zahra.thiaw.gestiondesfichiers.Web.Dtos.Mappers.FileMapper;
 import sn.zahra.thiaw.gestiondesfichiers.Services.FileService;
 import sn.zahra.thiaw.gestiondesfichiers.Web.Controllers.FileController;
+import sn.zahra.thiaw.gestiondesfichiers.Web.Dtos.Requests.FileRequestDTO;
 import sn.zahra.thiaw.gestiondesfichiers.Web.Dtos.Responses.FileResponseDTO;
-import sn.zahra.thiaw.gestiondesfichiers.Web.Filters.ApiResponse;
+import sn.zahra.thiaw.gestiondesfichiers.Filters.ApiResponse;
 
 import java.util.List;
 import java.util.Optional;
@@ -39,12 +40,11 @@ public class FileControllerImpl extends BaseControllerImpl<FileEntity, Long, Fil
         this.fileMapper = fileMapper;
     }
 
+
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<ApiResponse<FileResponseDTO>> uploadFile(
-            @RequestParam("file") MultipartFile file,
-            @RequestParam(value = "storageType", defaultValue = "LOCAL") StorageType storageType) {
+    public ResponseEntity<ApiResponse<FileResponseDTO>> uploadFile(@ModelAttribute FileRequestDTO fileRequest) {
         try {
-            if (file.isEmpty()) {
+            if (fileRequest.getFile().isEmpty()) {
                 return ResponseEntity.badRequest().body(new ApiResponse<>(
                         false,
                         "File is empty",
@@ -55,7 +55,10 @@ public class FileControllerImpl extends BaseControllerImpl<FileEntity, Long, Fil
                 ));
             }
 
-            FileEntity uploadedFile = fileService.uploadFile(file, storageType);
+            FileEntity uploadedFile = fileService.uploadFile(
+                    fileRequest.getFile(),
+                    fileRequest.getStorageType() != null ? fileRequest.getStorageType() : StorageType.LOCAL
+            );
             FileResponseDTO responseDto = fileMapper.toResponseDto(uploadedFile);
 
             return ResponseEntity.status(201).body(new ApiResponse<>(
@@ -77,24 +80,6 @@ public class FileControllerImpl extends BaseControllerImpl<FileEntity, Long, Fil
             ));
         }
     }
-
-//    @GetMapping("/{id}/download")
-//    public ResponseEntity<ByteArrayResource> downloadFile(@PathVariable Long id) {
-//        try {
-//            FileEntity fileEntity = fileService.getById(id);
-//            byte[] data = fileService.downloadFile(id);
-//            ByteArrayResource resource = new ByteArrayResource(data);
-//
-//            return ResponseEntity.ok()
-//                    .header(HttpHeaders.CONTENT_DISPOSITION,
-//                            "attachment; filename=\"" + fileEntity.getFileName() + "\"")
-//                    .contentType(MediaType.parseMediaType(fileEntity.getContentType()))
-//                    .contentLength(fileEntity.getSize())
-//                    .body(resource);
-//        } catch (Exception e) {
-//            return ResponseEntity.notFound().build();
-//        }
-//    }
 
     @GetMapping("/{id}/download")
     public ResponseEntity<?> downloadFile(@PathVariable Long id) {

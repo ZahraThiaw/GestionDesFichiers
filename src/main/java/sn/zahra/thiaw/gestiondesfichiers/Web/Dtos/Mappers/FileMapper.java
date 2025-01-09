@@ -1,5 +1,5 @@
 // FileMapper.java
-package sn.zahra.thiaw.gestiondesfichiers.Mappers;
+package sn.zahra.thiaw.gestiondesfichiers.Web.Dtos.Mappers;
 
 import org.springframework.stereotype.Component;
 import sn.zahra.thiaw.gestiondesfichiers.Datas.Entities.FileEntity;
