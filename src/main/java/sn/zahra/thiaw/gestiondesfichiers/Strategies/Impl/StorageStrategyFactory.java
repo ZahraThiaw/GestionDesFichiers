@@ -19,7 +19,6 @@ public class StorageStrategyFactory {
 
     public StorageStrategy getStrategy(StorageType storageType) {
         return strategies.stream()
-                .filter(strategy -> strategy.supports(storageType))
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException("Unsupported storage type: " + storageType));
     }

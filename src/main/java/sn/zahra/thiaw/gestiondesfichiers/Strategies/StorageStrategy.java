@@ -9,6 +9,4 @@ import sn.zahra.thiaw.gestiondesfichiers.Datas.Enums.StorageType;
 public interface StorageStrategy {
     void store(MultipartFile file, String fileName, FileEntity fileEntity);
     byte[] retrieve(FileEntity fileEntity);
-    void delete(FileEntity fileEntity);
-    boolean supports(StorageType storageType);
 }

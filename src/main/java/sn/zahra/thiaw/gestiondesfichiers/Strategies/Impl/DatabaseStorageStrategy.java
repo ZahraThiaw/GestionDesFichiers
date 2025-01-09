@@ -26,13 +26,4 @@ public class DatabaseStorageStrategy implements StorageStrategy {
         return fileEntity.getFileData();
     }
 
-    @Override
-    public void delete(FileEntity fileEntity) {
-        // Nothing to do as file data will be deleted with the entity
-    }
-
-    @Override
-    public boolean supports(StorageType storageType) {
-        return StorageType.DATABASE.equals(storageType);
-    }
 }

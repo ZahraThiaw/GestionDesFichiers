@@ -49,19 +49,4 @@ public class LocalStorageStrategy implements StorageStrategy {
             throw new RuntimeException("Failed to read file", e);
         }
     }
-
-    @Override
-    public void delete(FileEntity fileEntity) {
-        try {
-            Path filePath = Paths.get(uploadDir).resolve(fileEntity.getFilePath());
-            Files.deleteIfExists(filePath);
-        } catch (IOException e) {
-            throw new RuntimeException("Failed to delete file", e);
-        }
-    }
-
-    @Override
-    public boolean supports(StorageType storageType) {
-        return StorageType.LOCAL.equals(storageType);
-    }
 }

@@ -9,12 +9,12 @@ import org.springframework.web.multipart.MultipartFile;
 import sn.zahra.thiaw.gestiondesfichiers.Datas.Entities.FileEntity;
 import sn.zahra.thiaw.gestiondesfichiers.Datas.Enums.StorageType;
 import sn.zahra.thiaw.gestiondesfichiers.Datas.Repositories.FileRepository;
-import sn.zahra.thiaw.gestiondesfichiers.Exceptions.BadRequestException;
 import sn.zahra.thiaw.gestiondesfichiers.Exceptions.ResourceNotFoundException;
 import sn.zahra.thiaw.gestiondesfichiers.Services.FileService;
 import sn.zahra.thiaw.gestiondesfichiers.Strategies.Impl.StorageStrategyFactory;
 import sn.zahra.thiaw.gestiondesfichiers.Strategies.StorageStrategy;
 import sn.zahra.thiaw.gestiondesfichiers.Configs.FileStorageConfig;
+import sn.zahra.thiaw.gestiondesfichiers.Validators.FileValidator;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -25,33 +25,32 @@ public class FileServiceImpl extends BaseServiceImpl<FileEntity, Long> implement
 
     private final FileRepository fileRepository;
     private final StorageStrategyFactory storageStrategyFactory;
-    private final FileStorageConfig fileStorageConfig;
+    private final FileValidator fileValidator;
 
-    public FileServiceImpl(FileRepository fileRepository, StorageStrategyFactory storageStrategyFactory, FileStorageConfig fileStorageConfig) {
+    public FileServiceImpl(FileRepository fileRepository,
+                           StorageStrategyFactory storageStrategyFactory,
+                           FileStorageConfig fileStorageConfig) {
         super(fileRepository);
         this.fileRepository = fileRepository;
         this.storageStrategyFactory = storageStrategyFactory;
-        this.fileStorageConfig = fileStorageConfig;
+        this.fileValidator = new FileValidator(fileStorageConfig);
     }
-
 
     @Override
     public FileEntity uploadFile(MultipartFile file, StorageType storageType) {
-        validateFile(file);
+        fileValidator.validateFile(file);
 
         String originalFileName = StringUtils.cleanPath(file.getOriginalFilename());
         String fileExtension = getFileExtension(originalFileName);
         String nameWithoutExtension = originalFileName.substring(0, originalFileName.lastIndexOf('.'));
         String fileName = nameWithoutExtension + UUID.randomUUID().toString() + "." + fileExtension;
 
-        // Création et configuration de base de FileEntity
         FileEntity fileEntity = new FileEntity();
         fileEntity.setFileName(fileName);
         fileEntity.setOriginalFileName(originalFileName);
         fileEntity.setContentType(file.getContentType());
         fileEntity.setSize(file.getSize());
 
-        // Application de la stratégie de stockage
         StorageStrategy strategy = storageStrategyFactory.getStrategy(storageType);
         strategy.store(file, fileName, fileEntity);
 
@@ -63,27 +62,6 @@ public class FileServiceImpl extends BaseServiceImpl<FileEntity, Long> implement
             return "";
         }
         return filename.substring(filename.lastIndexOf(".") + 1);
-    }
-
-    private void validateFile(MultipartFile file) {
-        if (file.isEmpty()) {
-            throw new BadRequestException("File is empty");
-        }
-
-        if (file.getSize() > fileStorageConfig.getMaxFileSize()) {
-            throw new BadRequestException("File size exceeds maximum limit of " +
-                    fileStorageConfig.getMaxFileSize() / 1_000_000 + "MB");
-        }
-
-        String contentType = file.getContentType();
-        if (contentType == null || !isAllowedContentType(contentType)) {
-            throw new BadRequestException("File type not allowed. Allowed types: " +
-                    String.join(", ", fileStorageConfig.getAllowedContentTypes()));
-        }
-    }
-
-    private boolean isAllowedContentType(String contentType) {
-        return fileStorageConfig.getAllowedContentTypes().contains(contentType);
     }
 
     @Override
@@ -104,7 +82,6 @@ public class FileServiceImpl extends BaseServiceImpl<FileEntity, Long> implement
     public void delete(Long id) {
         FileEntity fileEntity = getById(id);
         StorageStrategy strategy = storageStrategyFactory.getStrategy(fileEntity.getStorageType());
-        strategy.delete(fileEntity);
 
         fileEntity.setDeleted(true);
         fileRepository.save(fileEntity);
