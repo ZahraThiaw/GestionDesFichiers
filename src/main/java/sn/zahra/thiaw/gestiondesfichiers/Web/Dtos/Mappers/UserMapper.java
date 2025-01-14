@@ -1,42 +1,33 @@
 package sn.zahra.thiaw.gestiondesfichiers.Web.Dtos.Mappers;
 
-
-import org.springframework.stereotype.Component;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.factory.Mappers;
 import sn.zahra.thiaw.gestiondesfichiers.Datas.Entities.UserEntity;
 import sn.zahra.thiaw.gestiondesfichiers.Web.Dtos.Responses.UserResponseDTO;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
-@Component
-public class UserMapper implements GenericMapper<UserEntity, Void, UserResponseDTO> {
+@Mapper(componentModel = "spring")
+public interface UserMapper extends GenericMapper<UserEntity, Void, UserResponseDTO> {
 
-    @Override
-    public UserResponseDTO toResponseDto(UserEntity entity) {
-        if (entity == null) return null;
-
-        UserResponseDTO responseDTO = new UserResponseDTO();
-        responseDTO.setId(entity.getId());
-        responseDTO.setNom(entity.getNom());
-        responseDTO.setPrenom(entity.getPrenom());
-        responseDTO.setEmail(entity.getEmail());
-        responseDTO.setRole(entity.getRole());
-        return responseDTO;
-    }
+    UserMapper INSTANCE = Mappers.getMapper(UserMapper.class);
 
     @Override
-    public UserEntity toEntity(Void createDto) {
-        throw new UnsupportedOperationException("toEntity is not implemented for UserMapper.");
-    }
+    UserResponseDTO toResponseDto(UserEntity entity);
 
     @Override
-    public List<UserResponseDTO> toResponseDtoList(List<UserEntity> entities) {
+    default List<UserResponseDTO> toResponseDtoList(List<UserEntity> entities) {
         if (entities == null || entities.isEmpty()) {
             return List.of();
         }
-
         return entities.stream()
                 .map(this::toResponseDto)
-                .collect(Collectors.toList());
+                .toList();
+    }
+
+    @Override
+    default UserEntity toEntity(Void createDto) {
+        throw new UnsupportedOperationException("toEntity is not implemented for UserMapper.");
     }
 }
