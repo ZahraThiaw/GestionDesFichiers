@@ -24,21 +24,21 @@ public class UserControllerImpl extends BaseControllerImpl<UserEntity, Long, Use
         this.userService = userService;
     }
 
-    // Endpoint pour récupérer le profil de l'utilisateur connecté
-    @Override
-    @GetMapping("/profile")
-    public ResponseEntity<ApiResponse<UserResponseDTO>> getConnectedUserProfile() {
-        UserResponseDTO profile = userService.getConnectedUserProfile();
-        ApiResponse<UserResponseDTO> response = new ApiResponse<>(
-                true,
-                "Profil utilisateur récupéré avec succès",
-                profile,
-                Collections.emptyList(),
-                "OK",
-                200
-        );
-        return ResponseEntity.ok(response);
-    }
+//    // Endpoint pour récupérer le profil de l'utilisateur connecté
+//    @Override
+//    @GetMapping("/profile")
+//    public ResponseEntity<ApiResponse<UserResponseDTO>> getConnectedUserProfile() {
+//        UserResponseDTO profile = userService.getConnectedUserProfile();
+//        ApiResponse<UserResponseDTO> response = new ApiResponse<>(
+//                true,
+//                "Profil utilisateur récupéré avec succès",
+//                profile,
+//                Collections.emptyList(),
+//                "OK",
+//                200
+//        );
+//        return ResponseEntity.ok(response);
+//    }
 
     // Endpoint pour lister tous les utilisateurs (hérité de BaseControllerImpl)
     @Override

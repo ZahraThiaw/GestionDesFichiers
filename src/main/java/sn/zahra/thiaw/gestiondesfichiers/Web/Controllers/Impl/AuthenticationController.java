@@ -20,11 +20,13 @@ import java.util.Collections;
 @RestController
 @Tag(name = "Auth", description = "API pour gérer les utilisateurs")
 public class AuthenticationController {
-    private final JwtService jwtService;
+    //private final JwtService jwtService;
     private final AuthenticationService authenticationService;
 
-    public AuthenticationController(JwtService jwtService, AuthenticationService authenticationService) {
-        this.jwtService = jwtService;
+    public AuthenticationController(
+            //JwtService jwtService,
+            AuthenticationService authenticationService) {
+        //this.jwtService = jwtService;
         this.authenticationService = authenticationService;
     }
 
@@ -42,21 +44,21 @@ public class AuthenticationController {
         return ResponseEntity.ok(response);
     }
 
-    @PostMapping("/login")
-    public ResponseEntity<ApiResponse<LoginResponse>> authenticate(@RequestBody LoginUserDto loginUserDto) {
-        UserEntity authenticatedUser = authenticationService.authenticate(loginUserDto);
-        String jwtToken = jwtService.generateToken(authenticatedUser);
-        LoginResponse loginResponse = new LoginResponse();
-        loginResponse.setToken(jwtToken);
-
-        ApiResponse<LoginResponse> response = new ApiResponse<>(
-                true,
-                "Authentification réussie",
-                loginResponse,
-                Collections.emptyList(),
-                "OK",
-                200
-        );
-        return ResponseEntity.ok(response);
-    }
+//    @PostMapping("/login")
+//    public ResponseEntity<ApiResponse<LoginResponse>> authenticate(@RequestBody LoginUserDto loginUserDto) {
+//        UserEntity authenticatedUser = authenticationService.authenticate(loginUserDto);
+//        String jwtToken = jwtService.generateToken(authenticatedUser);
+//        LoginResponse loginResponse = new LoginResponse();
+//        loginResponse.setToken(jwtToken);
+//
+//        ApiResponse<LoginResponse> response = new ApiResponse<>(
+//                true,
+//                "Authentification réussie",
+//                loginResponse,
+//                Collections.emptyList(),
+//                "OK",
+//                200
+//        );
+//        return ResponseEntity.ok(response);
+//    }
 }

@@ -1,7 +1,6 @@
 
 // FileControllerImpl.java
 package sn.zahra.thiaw.gestiondesfichiers.Web.Controllers.Impl;
-
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -38,7 +37,6 @@ public class FileControllerImpl extends BaseControllerImpl<FileEntity, Long, Fil
         this.fileService = fileService;
         this.fileMapper = fileMapper;
     }
-
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ApiResponse<FileResponseDTO>> uploadFile(@ModelAttribute FileRequestDTO fileRequest) {

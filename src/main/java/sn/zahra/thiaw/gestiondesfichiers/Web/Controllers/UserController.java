@@ -8,5 +8,5 @@ import sn.zahra.thiaw.gestiondesfichiers.Filters.ApiResponse;
 
 public interface UserController extends BaseController<UserEntity, Long, UserResponseDTO> {
 
-    ResponseEntity<ApiResponse<UserResponseDTO>> getConnectedUserProfile();
+    //ResponseEntity<ApiResponse<UserResponseDTO>> getConnectedUserProfile();
 }

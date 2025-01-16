@@ -7,5 +7,5 @@ import sn.zahra.thiaw.gestiondesfichiers.Web.Dtos.Responses.UserResponseDTO;
 
 public interface UserService extends BaseService<UserEntity, Long> {
 
-    UserResponseDTO getConnectedUserProfile();
+    //UserResponseDTO getConnectedUserProfile();
 }
