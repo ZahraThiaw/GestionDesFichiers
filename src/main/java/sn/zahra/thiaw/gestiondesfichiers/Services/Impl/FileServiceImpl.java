@@ -11,7 +11,7 @@ import sn.zahra.thiaw.gestiondesfichiers.Datas.Enums.StorageType;
 import sn.zahra.thiaw.gestiondesfichiers.Datas.Repositories.FileRepository;
 import sn.zahra.thiaw.gestiondesfichiers.Exceptions.ResourceNotFoundException;
 import sn.zahra.thiaw.gestiondesfichiers.Services.FileService;
-import sn.zahra.thiaw.gestiondesfichiers.Strategies.Impl.StorageStrategyFactory;
+import sn.zahra.thiaw.gestiondesfichiers.Strategies.Which.StorageStrategyFactory;
 import sn.zahra.thiaw.gestiondesfichiers.Strategies.StorageStrategy;
 import sn.zahra.thiaw.gestiondesfichiers.Configs.FileStorageConfig;
 import sn.zahra.thiaw.gestiondesfichiers.Validators.FileValidator;

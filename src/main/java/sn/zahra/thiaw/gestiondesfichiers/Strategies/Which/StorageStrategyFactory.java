@@ -1,5 +1,5 @@
 // StorageStrategyFactory.java
-package sn.zahra.thiaw.gestiondesfichiers.Strategies.Impl;
+package sn.zahra.thiaw.gestiondesfichiers.Strategies.Which;
 
 
 import org.springframework.stereotype.Service;
