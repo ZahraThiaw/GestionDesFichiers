@@ -58,10 +58,10 @@ public class UserEntity extends BaseEntity implements UserDetails {
     private String password;
 
     public enum Role {
-        ADMIN,
-        USERSIMPLE
+        admin,
+        user
     }
 
     @Enumerated(EnumType.STRING)
-    private Role role = Role.USERSIMPLE;
+    private Role role = Role.user;
 }
