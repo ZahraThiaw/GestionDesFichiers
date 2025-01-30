@@ -1,10 +1,15 @@
 package sn.zahra.thiaw.gestiondesfichiers.validators;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.multipart.MultipartFile;
 import sn.zahra.thiaw.gestiondesfichiers.exceptions.BadRequestException;
 import sn.zahra.thiaw.gestiondesfichiers.configs.FileStorageConfig;
 
 public class FileValidator {
+
+    @Value("${file.upload.max-file-size}")
+    private long maxSizefile ;
+
     private final FileStorageConfig fileStorageConfig;
 
     public FileValidator(FileStorageConfig fileStorageConfig) {
@@ -18,8 +23,7 @@ public class FileValidator {
 
         if (file.getSize() > fileStorageConfig.getMaxFileSize()) {
             throw new BadRequestException("File size exceeds maximum limit of " +
-                    fileStorageConfig.getMaxFileSize() / 1_000_000 + "MB");
-            //Todo toujours mettre les nombres dans des constantes avec un nom significatif
+                    fileStorageConfig.getMaxFileSize() / maxSizefile + "MB");
         }
 
         String contentType = file.getContentType();

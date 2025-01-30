@@ -61,21 +61,13 @@ public class FileServiceImpl extends BaseServiceImpl<FileEntity, Long> implement
     public FileEntity uploadFile(MultipartFile file, StorageType storageType) {
         fileValidator.validateFile(file);
 
-        String originalFileName = StringUtils.cleanPath(file.getOriginalFilename());
-        String fileExtension = getFileExtension(originalFileName);
-        String nameWithoutExtension = originalFileName.substring(0, originalFileName.lastIndexOf('.'));
-        String fileName = nameWithoutExtension + UUID.randomUUID().toString() + "." + fileExtension;
-
         FileEntity fileEntity = new FileEntity();
-        fileEntity.setFileName(fileName);
-        fileEntity.setOriginalFileName(originalFileName);
-        fileEntity.setContentType(file.getContentType());
-        fileEntity.setSize(file.getSize());
 
+        // Sélectionner la bonne stratégie et stocker le fichier
         StorageStrategy strategy = storageStrategyFactory.getStrategy(storageType);
-        strategy.store(file, fileName, fileEntity);
+        strategy.store(file, fileEntity);
 
-        return fileEntity; // Ne sauvegarde plus ici
+        return fileEntity;
     }
 
     private String getFileExtension(String filename) {

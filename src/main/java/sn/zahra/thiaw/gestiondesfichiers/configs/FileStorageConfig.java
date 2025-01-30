@@ -1,5 +1,6 @@
 package sn.zahra.thiaw.gestiondesfichiers.configs;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 
@@ -10,7 +11,9 @@ import java.util.ArrayList;
 @ConfigurationProperties(prefix = "file.upload")
 public class FileStorageConfig {
     private List<String> allowedContentTypes = new ArrayList<>();
-    private long maxFileSize = 10_000_000; // Default 10MB
+
+    @Value("${file.upload.max-file-size}")
+    private long maxFileSize;
 
     public List<String> getAllowedContentTypes() {
         return allowedContentTypes;

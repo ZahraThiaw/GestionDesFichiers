@@ -3,6 +3,7 @@ package sn.zahra.thiaw.gestiondesfichiers.strategies.impl;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 import sn.zahra.thiaw.gestiondesfichiers.datas.entities.FileEntity;
 import sn.zahra.thiaw.gestiondesfichiers.datas.enums.StorageType;
@@ -14,6 +15,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.UUID;
 
 @Service
 public class LocalStorageStrategy implements StorageStrategy {
@@ -34,13 +36,38 @@ public class LocalStorageStrategy implements StorageStrategy {
         }
     }
 
+//    @Override
+//    public void store(MultipartFile file, String fileName, FileEntity fileEntity) {
+//        try {
+//            Path targetLocation = Paths.get(uploadDir).resolve(fileName);
+//            Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
+//
+//            fileEntity.setFilePath(fileName);
+//            fileEntity.setStorageType(StorageType.LOCAL);
+//            fileRepository.save(fileEntity);
+//        } catch (IOException e) {
+//            throw new RuntimeException("Failed to store file locally", e);
+//        }
+//    }
+
     @Override
-    public void store(MultipartFile file, String fileName, FileEntity fileEntity) {
+    public void store(MultipartFile file, FileEntity fileEntity) {
         try {
+            String originalFileName = StringUtils.cleanPath(file.getOriginalFilename());
+            String fileExtension = getFileExtension(originalFileName);
+            String nameWithoutExtension = originalFileName.substring(0, originalFileName.lastIndexOf('.'));
+            String fileName = nameWithoutExtension + "_" + UUID.randomUUID().toString() + "." + fileExtension;
+
             Path targetLocation = Paths.get(uploadDir).resolve(fileName);
             Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
+
             fileEntity.setFilePath(fileName);
             fileEntity.setStorageType(StorageType.LOCAL);
+            fileEntity.setFileName(fileName);
+            fileEntity.setOriginalFileName(originalFileName);
+            fileEntity.setContentType(file.getContentType());
+            fileEntity.setSize(file.getSize());
+
             fileRepository.save(fileEntity);
         } catch (IOException e) {
             throw new RuntimeException("Failed to store file locally", e);
@@ -60,5 +87,12 @@ public class LocalStorageStrategy implements StorageStrategy {
     @Override
     public boolean supports(StorageType storageType) {
         return StorageType.LOCAL.equals(storageType);
+    }
+
+    private String getFileExtension(String filename) {
+        if (filename == null || filename.lastIndexOf(".") == -1) {
+            return "";
+        }
+        return filename.substring(filename.lastIndexOf(".") + 1);
     }
 }

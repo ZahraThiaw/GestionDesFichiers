@@ -7,7 +7,7 @@ import sn.zahra.thiaw.gestiondesfichiers.datas.entities.FileEntity;
 
 
 public interface StorageStrategy {
-    void store(MultipartFile file, String fileName, FileEntity fileEntity);
+    void store(MultipartFile file, FileEntity fileEntity);
     byte[] retrieve(FileEntity fileEntity);
 //    default StorageType getStorageType(){
 //        return StorageType.LOCAL;
