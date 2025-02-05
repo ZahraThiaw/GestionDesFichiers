@@ -9,6 +9,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import sn.zahra.thiaw.gestiondesfichiers.domain.entity.FileEntity;
 import sn.zahra.thiaw.gestiondesfichiers.domain.enums.StorageType;
@@ -168,6 +169,7 @@ public class FileControllerImpl extends BaseControllerImpl<FileEntity, Long, Fil
 
     @Override
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('admin')")
     public ResponseEntity<ApiResponse<Void>> delete(@PathVariable Long id) {
             fileService.delete(id);
             return ResponseEntity.ok(new ApiResponse<>(
